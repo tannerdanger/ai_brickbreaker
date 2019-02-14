@@ -1,31 +1,42 @@
+window.requestAnimFrame = (function () {
+    return window.requestAnimationFrame ||
+        window.webkitRequestAnimationFrame ||
+        window.mozRequestAnimationFrame ||
+        window.oRequestAnimationFrame ||
+        window.msRequestAnimationFrame ||
+        function (/* function */ callback, /* DOMElement */ element) {
+            window.setTimeout(callback, 1000 / 60);
+        };
+})();
+
+
 function GameEngine(){
-    this.timer = null
-    this.game = null
+    this.timer = null;
+    this.game = null;
     this.dt = 0;
+    this.ctx = null;
+    this.surfaceWidth = null;
+    this.surfaceHeight = null;
+    this.AI = null;
 }
-GameEngine.prototype.init = function(game){
+GameEngine.prototype.init = function(ctx ,game){
+    this.game = game;
+    this.ctx = ctx;
     this.timer = new Timer();
-    this.game = game
-}
+
+};
 GameEngine.prototype.start = function(){
     var that = this;
     (function gameLoop(){
         that.loop();
-       // requestAnimationFrame(gameLoop, that.ct) TODO:
+        requestAnimFrame(gameLoop, that.ctx.canvas);
     })();
-}
+};
 GameEngine.prototype.loop = function(){
     this.dt = this.timer.tick();
-    this.update();
-    this.draw();
-}
-GameEngine.prototype.draw = function(){
-    this.game.draw()
-}
-GameEngine.prototype.update = function(){
-    this.game.update(this.dt) 
-}
-
+    this.game.update(this.dt);
+    this.game.draw();
+};
 
 
 

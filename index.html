@@ -3,17 +3,16 @@
   <head>
     <meta charset="utf-8" />
     <title>AI BRICK BREAKER</title>
-    <!-- <link rel="stylesheet" href="assets/style.css"> -->
-    <script src="pixi.js"></script>
-    <script src="objects.js"></script>
-    <script src="assetmanager.js"></script>
-    <script src="engine.js"></script>
-    <script src="main.js" type="module"></script>
+    <link rel="stylesheet" href="assets/style.css">
   </head>
   <body>
-    <canvas
-      id="gameWorld"
-      tabindex="1"
-    ></canvas>
+  <canvas id="canvas" width="1280" height="720" tabindex="1">No canvas support</canvas>
+    <script src="entities.js"></script>
+    <script src="statemachine.js"></script>
+    <script src="states.js"></script>
+    <script src="assetmanager.js"></script>
+    <script src="engine.js"></script>
+    <script src="ai.js"></script>
+    <script src="main.js" type="module"></script>
   </body>
 </html>

@@ -1,4 +1,4 @@
-function StateMachine(states){
+function StateMachine(){
 
     this.empty = {
         draw : function () {},
@@ -7,17 +7,16 @@ function StateMachine(states){
         exit : function () {},
     };
 
-    this.states = states || {};
     this.current = this.empty;
 
 }
 
-StateMachine.prototype.change = function (stateName, enterParams) {
-    if(this.states[stateName]){
+StateMachine.prototype.change = function (state, enterParams) {
+
         this.current.exit();
-        this.current = this.states[stateName];
+        this.current = state;
         this.current.enter();
-    }
+
 };
 
 StateMachine.prototype.update = function (dt) {
@@ -27,3 +26,5 @@ StateMachine.prototype.update = function (dt) {
 StateMachine.prototype.draw = function (ctx) {
     this.current.draw(ctx);
 };
+
+gSTATE_MACHINE = new StateMachine();

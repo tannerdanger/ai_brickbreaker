@@ -8,18 +8,18 @@ function AssetManager() {
 AssetManager.prototype.queueDownload = function (path) {
     console.log("Queueing " + path);
     this.downloadQueue.push(path);
-}
+};
 
 AssetManager.prototype.isDone = function () {
     return this.downloadQueue.length === this.successCount + this.errorCount;
-}
+};
 
 AssetManager.prototype.downloadBulk = function(paths, callback){
     for(let i = 0; i < paths.length; i++) {
         this.downloadQueue.push(paths[i])
     }
     this.downloadAll(callback)
-}
+};
 
 AssetManager.prototype.downloadAll = function (callback) {
     for (var i = 0; i < this.downloadQueue.length; i++) {
