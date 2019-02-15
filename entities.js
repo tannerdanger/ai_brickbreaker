@@ -24,7 +24,7 @@ gSounds = {
     aud_UPGRADE : 'assets/powerup.wav',
     aud_MUSIC : 'assets/music.mp3',
 };
-gBRICKS = [];
+gBRICKS = [{}];
 KEYS = {
     ArrowUp: 'ArrowUp',
     ArrowDown: 'ArrowDown',

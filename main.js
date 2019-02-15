@@ -40,7 +40,8 @@ Game.prototype.init = function(){
     gBREAKER = new Breaker((gPLAYER.x + gPLAYER.w)/2 - 2 , gPLAYER.y - gPLAYER.h, 3, 4 );
 
     gSTATE_MACHINE.change(gStates.title);
-    this.initBricks(1);
+    
+    buildBricks(5, 14, this.surfaceWidth, this.surfaceHeight);
 
     this.entities = gBRICKS;
 
@@ -52,30 +53,31 @@ Game.prototype.addEntity = function (entity) {
 Game.prototype.killEntity = function (entity) {
     //TODO: remove from entities
 };
-Game.prototype.initBricks = function (level) {
-    //TODO: scale by level
+// Game.prototype.initBricks = function (level) {
+//     //TODO: scale by level
 
-    var bricksInRow = 15;
-                    //all across the surface with 20px buffer
-    var brickw = (this.surfaceWidth / (bricksInRow + 2)) - 10;
-    var brickGap = (this.surfaceWidth / (bricksInRow + 1));
-    brickGap = brickGap - brickw;
-    var brickRows = 5;
-    var yStart = this.surfaceHeight - (this.surfaceHeight /10);
+//     var cols = 15;
+//     var rows = 5;
+//     var brickw = (this.surfaceWidth / (cols + 2)) - 10
+//     var brickGap = (this.surfaceWidth / (cols + 1));
+//     brickGap = brickGap - brickw;
 
-    var lastBrick = brickw / 2 + 10;
+    
+//     var yStart = this.surfaceHeight - (this.surfaceHeight /10);
 
-    for(var j = 0; j < brickRows; j++) {
-        for (var i = 0; i < bricksInRow; i++) {
-            let fillstyle = (i % 2 === 0) ? 'red' : 'blue';
+//     var lastBrick = brickw / 2 + 10;
 
-            let b = new Brick(lastBrick, this.surfaceHeight / 2, yStart, brickw / 3, fillstyle)
-            gBRICKS[i] = b;
-            lastBrick += brickw + brickGap;
-        }
-        yStart += brickGap;
-    }
-};
+//     for(var j = 0; j < brickRows; j++) {
+//         for (var i = 0; i < bricksInRow; i++) {
+//             let fillstyle = (i % 2 === 0) ? 'red' : 'blue';
+
+//             let b = new Brick(lastBrick, yStart, brickw, brickw / 3, fillstyle)
+//             gBRICKS[i] = b;
+//             lastBrick += brickw + brickGap;
+//         }
+//         yStart += brickGap;
+//     }
+// };
 
 //START STUFF
 var AM = new AssetManager();
@@ -83,3 +85,45 @@ var GAME = new Game();
 AM.downloadBulk(Object.values(gSounds), function(){
     GAME.init();
 });
+function buildBricks(rows, cols, canvasW, canvasH){
+
+    console.log(canvasW)
+    var nextX = 0;
+    var nextY = 20;
+    var margins = 20;
+    console.log('margins: ', margins);
+    var brickwidth = (canvasW - (margins * 2)); //canvas - margins = working space
+    console.log('build area minus the ends: ', brickwidth);
+    brickwidth = brickwidth - ((cols-1) *margins); // workingspace - (cols * margins)
+    console.log('build area minus brick spacing: ', brickwidth)
+    brickwidth = brickwidth / cols;
+    brickctr = 0;
+    console.log('final brickwidth :',brickwidth)
+
+    for (var i = 0; i < cols; i++) {
+             let fillstyle = (i % 2 === 0) ? 'red' : 'blue';
+
+             let b = new Brick(nextX, nextY, brickwidth, margins, fillstyle)
+             gBRICKS[i] = b;
+             nextX += brickwidth + margins;
+    }
+    // for(var i = 0; i < rows; i++){
+
+    //     for(var j = 0; j < cols; j++){
+            
+    //         let fillstyle = (i % 2 === 0) ? 'red' : 'blue';
+            
+    //         let b = new Brick(x + margins, y, brickwidth, brickwidth / 3, fillstyle)
+    //        // x = x +( brickwidth + margins )
+    //        x += brickwidth
+    //         gBRICKS[brickctr] = b
+    //         brickctr++;
+    //         console.log('added brick at (x,y) : ',b.x, b.y)
+    //     }
+    //     y += margins * 2
+    //     x = 0;
+
+    // }
+
+
+}

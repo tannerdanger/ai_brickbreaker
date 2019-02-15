@@ -21,7 +21,9 @@ function basestate() {
 basestate.prototype.draw = function (ctx) {
 
     for(let i = 0; i < gBRICKS.length; i++) {
+  //      console.log('drawing bricks')
         let brick = gBRICKS[i];
+    
         gBRICKS[i].draw(ctx);
     }
 };
