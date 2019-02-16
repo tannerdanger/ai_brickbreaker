@@ -17,7 +17,7 @@ function GameEngine(){
     this.ctx = null;
     this.surfaceWidth = null;
     this.surfaceHeight = null;
-    this.AI = null;
+
 }
 GameEngine.prototype.init = function(ctx ,game){
     this.game = game;
@@ -36,6 +36,7 @@ GameEngine.prototype.loop = function(){
     this.dt = this.timer.tick();
     this.game.update(this.dt);
     this.game.draw();
+    
 };
 
 

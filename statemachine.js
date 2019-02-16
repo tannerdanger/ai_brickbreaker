@@ -6,13 +6,17 @@ function StateMachine(){
         exit : function () {},
     };
     this.current = this.empty;
+    this.game = null;
 }
 
 StateMachine.prototype.change = function (state, enterParams) {
         this.current.exit();
         this.current = state;
-        this.current.enter();
+        this.current.enter(this.game);
 };
+StateMachine.prototype.init = function(game) {
+    this.game = game
+}
 
 StateMachine.prototype.update = function (dt) {
     this.current.update(dt)

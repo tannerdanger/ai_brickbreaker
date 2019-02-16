@@ -1,5 +1,22 @@
+//TODO: check the downkeys and find out what is wrong with the behavior.
+// AI keys are sticking/not resetting properly
 
 
+function InputManager() {
+    this.ctx = null;
+};
+InputManager.prototype.registerEventListeners = function (ctx) {
+    this.ctx = ctx;
+    this.ctx.canvas.addEventListener('keydown', e => {
+        console.log(e.code, " :pressed");
+        gDOWN_KEYS[e.code] = true
+    }, false)
+
+    this.ctx.canvas.addEventListener('keyup', e => {
+        console.log(e.code, " :released");
+        gDOWN_KEYS[e.code] = false
+    }, false)
+};
 
 
 
@@ -9,7 +26,8 @@ function Game(sounds){
     this.engine = new GameEngine();
     this.inputManager = new InputManager();
     this.entities = [];
-
+    this.ctx = null;
+    this.CPU_GUY = null;
 
 
 }
@@ -20,7 +38,9 @@ Game.prototype.draw = function(){
     this.ctx.restore();
 };
 Game.prototype.update = function(dt){
+    this.CPU_GUY.calculateDecision(gSTATE_MACHINE.current)
     gSTATE_MACHINE.update(dt);
+    this.CPU_GUY.cleanup();
 };
 Game.prototype.init = function(){
     //init
@@ -35,18 +55,21 @@ Game.prototype.init = function(){
     this.surfaceWidth = this.ctx.canvas.width;
     this.surfaceHeight = this.ctx.canvas.height;
     this.inputManager.registerEventListeners(this.ctx);
-
+    this.CPU_GUY = new AI();
     gPLAYER = new Paddle(this.surfaceWidth / 2, this.surfaceHeight - 50, 150, 25);
 
     gBREAKER = new Breaker((gPLAYER.x + gPLAYER.w/2), gPLAYER.y - gPLAYER.h/2, 8 );
 
-    gSTATE_MACHINE.change(gStates.title);
+
     
     buildBricks(5, 14, this.surfaceWidth, this.surfaceHeight);
 
     this.entities = gBRICKS;
+        
 
+    gSTATE_MACHINE.change(gStates.title); 
     this.engine.start();
+    
 };
 Game.prototype.addEntity = function (entity) {
     this.entities.push(entity)

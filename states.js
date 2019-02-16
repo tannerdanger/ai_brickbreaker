@@ -68,6 +68,7 @@ class ServeState extends baseState{
         this.score = 0;
         this.lives = 3;
         this.playerspeed = PLAYER_SPEED
+        this._NAME = 'serve'
     }
     enter(params){
         AM.getAsset(gSounds.aud_MUSIC).play();
@@ -80,6 +81,9 @@ class ServeState extends baseState{
         else if(gDOWN_KEYS['ArrowRight'] || gDOWN_KEYS['KeyD']){
             gPLAYER.dx = +PLAYER_SPEED;
             gBREAKER.dx = gPLAYER.dx;
+        }
+        else if(gDOWN_KEYS['ArrowUp']) {
+
         }
         else {
             gPLAYER.dx = 0;
@@ -95,14 +99,20 @@ class ServeState extends baseState{
 class PlayState extends baseState{
     constructor(){
         super();
+        this._NAME = 'play'
         //this.wallHit = AM.getAsset(gSounds.aud_HIT_WALL)
     }
+    enter(params){
+        
+    }
     update(dt){
+
+        
+
         if( gBREAKER.collides(gPLAYER)){
             AM.getAsset(gSounds.aud_HIT_PADDLE).play();
-            //AM.getAsset(gSounds.aud_HIT_PADDLE).play();
             gBREAKER.dy = -gBREAKER.dy;
-            gBREAKER.y = gPLAYER.y - 10;
+            gBREAKER.y = gPLAYER.y - 5;
         }
         //TODO: check vertical so don't check brick collision unless coplanar with lowest brick
         if(gBREAKER.y < BRICK_LINE) {
@@ -112,7 +122,7 @@ class PlayState extends baseState{
                 if(gBREAKER.collides(brick)){
                     AM.getAsset(gSounds.aud_HIT_BRICK).play();
                     gBREAKER.dy = -gBREAKER.dy;
-                    gBREAKER.y = (brick.y + brick.h + 12)
+                    gBREAKER.y = (brick.y + brick.h + 5)
                     gBRICKS.splice(gBRICKS.indexOf(brick), 1);
                 }
             }
@@ -135,6 +145,7 @@ class PlayState extends baseState{
             gPLAYER.dx = 0;
         }
         super.update(dt);
+
     }
     enter(params) {
         gBREAKER.serve();
