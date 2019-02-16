@@ -6,8 +6,8 @@ WINDOW_HEIGHT = 720;
 /** Virtual sizes to simulate resolution. */
 VIRTUAL_WIDTH = 432;
 VIRTUAL_HEIGHT = 243;
-PLAYER_SPEED = 200;
-
+PLAYER_SPEED = 300;
+BRICK_LINE = 280;
 
 /** The object the player controls. Represented as the paddle that hits the breaker. */
 gPLAYER = {};
@@ -86,13 +86,37 @@ class entity{
         this.h = this._h = h;
         this.dy = 0;
         this.dx = 0;
+        this.fillStyle = null;
     }
     draw(ctx){
         ctx.fillStyle = this.fillStyle || 'white';
         ctx.fillRect(this.x, this.y, this.w, this.h)
     }
     update(dt){
+        //this.x = (this.dx < 0) ? Math.max(0, this.x + (this.dx * dt))//if dx is less than zero, move left
+          //  : Math.min(WINDOW_WIDTH - this.w, this.x + (this.dx * dt));
 
+        //DY < 0 = breaker moving up
+        // this.y = (this.dy < 0) ? Math.max(0, 1 + this.y - (this.dx * dt))
+        //     : this.y + (this.dy * dt);
+        this.x = this.x + this.dx * dt;
+        this.y = this. y + this.dy * dt;
+
+        if(this.x <= 0){
+            //play sound
+            gBREAKER.x = 0 + this.w;
+            gBREAKER.dx = -gBREAKER.dx
+        }
+        if(this.x >= WINDOW_WIDTH){
+            AM.getAsset(gSounds.aud_HIT_WALL).play();
+            gBREAKER.x = WINDOW_WIDTH - this.w;
+            gBREAKER.dx = -gBREAKER.dx
+        }
+        if(this.y <= 0){
+            AM.getAsset(gSounds.aud_HIT_WALL).play();
+            gBREAKER.y = gBREAKER.h + 1;
+            gBREAKER.dy = -gBREAKER.dy;
+        }
     }
     reset(){
         this.x = this._x;
@@ -110,45 +134,57 @@ class Paddle extends entity{
         super(x, y, w, h);
         this.fillStyle = 'white';
     }
+    update(dt){
+        this.x = (this.dx < 0) ? Math.max(0, this.x + (this.dx * dt))//if dx is less than zero, move left
+            : Math.min(WINDOW_WIDTH - this.w, this.x + (this.dx * dt))
+    }
 }
 
 class Breaker extends entity {
-    constructor(x,y,w,h){
-        super(x, y, w, h);
+    constructor(x,y,w){
+        super(x,y,w, w);
     }
+    draw(ctx){
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.w, 0, 2 * Math.PI, false);
+        ctx.fillStyle = this.fillStyle || 'white';
+        ctx.fill();
+        ctx.strokeStyle = 'black';
+        ctx.stroke();
+    }
+
+    collides(entity){
+        if( this.x > entity.x + entity.w || entity.x > this.x + this.w){
+            return false;
+        }
+        if( this.y > entity.y + entity.h || entity.y > this.y + this.h){
+            return false;
+        }
+        return true;
+    }
+    serve(){
+        if(this.dx === 0){
+            this.dx = 120
+        }
+        this.dy = -PLAYER_SPEED;
+        this.w = this._w;
+    }
+
 
 }
 
-// Breaker.prototype.serve = function(dx){
-//     this.dx = (dx < 0) ? -100
-//         : (dx > 0) ? 100
-//             : 100//TODO: math.random
-//
-//     this.dy = PLAYER_SPEED;//TODO: assign this value
-//     this.w = _w //TODO: _ is default value
-//
-// };
-// Breaker.prototype.update = function(dt){
-//     this.x = this.x + this.dx * dt;
-//     this.y = this.y + this.dy * dt;
-// };
-// Breaker.prototype.collides = function(object){
-//     //first check to see if left edte of either is further to right then
-//     //right edge of other
-//     if(this.x > object.x + object.w || object.x > (this.x + this.w)){
-//         return false
-//     }
-//     //then check to see if bottom is higher than top of other
-//     if(this.y > object.y + object.height || object.y > (this.y + this.height)){
-//         return false
-//     }
-//     return true
-//};
+
 class Brick extends entity{
     constructor(x, y, w, h, fillstyle){
         super(x, y, w, h);
         this.fillStyle = fillstyle;
+        this.remove = false;
     }
+    hit(){
+        //todo: colors
+        this.remove = true;
+    }
+
 }
 //
 // Brick.prototype = new entity(x, y, w, h);
