@@ -10,6 +10,15 @@ class AI {
         this.skip = false;
         this.reset();
         this.loop = 0;
+        this.DECISIONS = {
+            0 : this.isBreakerAboveMe,
+            1 : this.isBreakerBelowBrickLine,
+            2 : this.isBreakerMovingUp,
+            3 : this.isBreakerRightOfCenter,
+            4 : this.isBreakerLeftOfCenter,
+            5 : this.isBreakerCentered,
+        }
+        
     }
     // watch(){this.isWatching = true; }
     reset() {
@@ -117,7 +126,6 @@ class AI {
     isBreakerLeftOfCenter(){
         return gBREAKER.x < gPLAYER.x
     }
-    
     isBreakerRightOfCenter(){
         return gBREAKER.x > gPLAYER.x
     }
