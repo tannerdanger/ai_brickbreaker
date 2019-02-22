@@ -32,7 +32,7 @@ AssetManager.prototype.downloadAll = function (callback) {
             asset = new Audio();
 
             asset.addEventListener('canplaythrough', function(){
-                console.log("Loaded " + this.src);
+               // console.log("Loaded " + this.src);
                 that.successCount++;
                 if(that.isDone()) callback();
             })

@@ -16,7 +16,7 @@ StateMachine.prototype.change = function (state, enterParams) {
 };
 StateMachine.prototype.init = function(game) {
     this.game = game
-}
+};
 
 StateMachine.prototype.update = function (dt) {
     this.current.update(dt)

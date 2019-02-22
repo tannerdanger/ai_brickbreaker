@@ -12,6 +12,7 @@ gSTATE_MACHINE = {};
 
 
 
+
 pushdefaults = {
     autoStart : false, //automatically starts the rendering after the construction.
     width : 1280, //the width of the renderers view

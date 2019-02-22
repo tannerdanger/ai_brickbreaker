@@ -37,7 +37,7 @@ class baseState {
 }
 class TitleState extends baseState{
     constructor(){
-        super()
+        super();
         this.shadowOffset = 4;
         this.shadowColor = 'green';
         this.shadowBlur = 4;
@@ -67,11 +67,15 @@ class ServeState extends baseState{
         super();
         this.score = 0;
         this.lives = 3;
-        this.playerspeed = PLAYER_SPEED
+        this.playerspeed = PLAYER_SPEED;
         this._NAME = 'serve'
     }
     enter(params){
-        AM.getAsset(gSounds.aud_MUSIC).play();
+       // let music = AM.getAsset(gSounds.aud_MUSIC);
+        //music.oncanplaythrough(music.play());
+        gDOWN_KEYS['ArrowLeft'] = false;
+        gDOWN_KEYS['ArrowRight'] = false;
+        gAGITATOR.play = true;
     }
     update(dt){
         if(gDOWN_KEYS['ArrowLeft'] || gDOWN_KEYS['KeyA']){
@@ -107,8 +111,6 @@ class PlayState extends baseState{
     }
     update(dt){
 
-        
-
         if( gBREAKER.collides(gPLAYER)){
             AM.getAsset(gSounds.aud_HIT_PADDLE).play();
             gBREAKER.dy = -gBREAKER.dy;
@@ -122,14 +124,16 @@ class PlayState extends baseState{
                 if(gBREAKER.collides(brick)){
                     AM.getAsset(gSounds.aud_HIT_BRICK).play();
                     gBREAKER.dy = -gBREAKER.dy;
-                    gBREAKER.y = (brick.y + brick.h + 5)
-                    gBRICKS.splice(gBRICKS.indexOf(brick), 1);
+                    gBREAKER.y = (brick.y + brick.h );
+                    //gBRICKS.splice(gBRICKS.indexOf(brick), 1);
+                    brick.hit();
                 }
             }
         }
 
         if(gBREAKER.y > WINDOW_HEIGHT){
             AM.getAsset(gSounds.aud_EXPLOSION).play();
+            gAGITATOR.increaseStress( (3 + (gMAX_LIVES - gLIVES)) * 5);
             gBREAKER.reset();
             gPLAYER.reset();
             gSTATE_MACHINE.change(gStates.serve)
