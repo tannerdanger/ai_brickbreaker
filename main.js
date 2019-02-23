@@ -2,12 +2,13 @@
 // AI keys are sticking/not resetting properly
 function InputManager() {
     this.ctx = null;
+    this.isAbout = false;
 };
 InputManager.prototype.registerEventListeners = function (ctx) {
     this.ctx = ctx;
     this.ctx.canvas.addEventListener('keydown', e => {
         //console.log(e.code, " :pressed");
-        gDOWN_KEYS[e.code] = true
+        gDOWN_KEYS[e.code] = true;
     }, false)
 
     this.ctx.canvas.addEventListener('keyup', e => {
@@ -92,23 +93,23 @@ agitator.prototype.draw = function (ctx) {
         ctx.lineTo(this.x + this.w/2 + wordW /2, checksBlockBase + 130);
         ctx.stroke();
 
-        ctx.fillText('CONTROLS', this.x + this.w/2, controlBlockBase, this.w - 5);
+        // ctx.fillText('CONTROLS', this.x + this.w/2, controlBlockBase, this.w - 5);
+        ctx.font = '18px arcade';
+        ctx.fillText('press \'Q\' for ABOUT', this.x + this.w/2, controlBlockBase + 55, this.w);
+        // wordW = ctx.measureText('CONTROLS').width + 10;
+        // ctx.strokeStyle = 'red';
 
+        // ctx.beginPath();
+        // ctx.moveTo(this.x + this.w/2 - wordW /2 , controlBlockBase + 5);
+        // ctx.lineTo(this.x + this.w/2 + wordW /2, controlBlockBase + 5);
+        // ctx.stroke();
 
-        wordW = ctx.measureText('CONTROLS').width + 10;
-        ctx.strokeStyle = 'red';
+        // ctx.font = '14px arcade';
+        // ctx.textAlign = 'start';
 
-        ctx.beginPath();
-        ctx.moveTo(this.x + this.w/2 - wordW /2 , controlBlockBase + 5);
-        ctx.lineTo(this.x + this.w/2 + wordW /2, controlBlockBase + 5);
-        ctx.stroke();
-
-        ctx.font = '14px arcade';
-        ctx.textAlign = 'start';
-
-        ctx.fillText('CPU STRESS + :  UP KEY'+String.fromCharCode(), this.x + 10, controlBlockBase + 25, this.w);
-        ctx.fillText('CPU STRESS -- :  DOWN KEY', this.x + 10, controlBlockBase + 40, this.w);
-        ctx.fillText('READ ABOUT THIS GAME : Q ', this.x + 10, controlBlockBase + 55, this.w);
+        // ctx.fillText('CPU STRESS + :  UP KEY'+String.fromCharCode(), this.x + 10, controlBlockBase + 25, this.w);
+        // ctx.fillText('CPU STRESS -- :  DOWN KEY', this.x + 10, controlBlockBase + 40, this.w);
+        // ctx.fillText('READ ABOUT THIS GAME : Q ', this.x + 10, controlBlockBase + 55, this.w);
 
         ctx.globalAlpha = alpha
     }

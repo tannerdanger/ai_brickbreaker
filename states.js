@@ -27,9 +27,13 @@ class baseState {
     update(dt){
         gPLAYER.update(dt);
         gBREAKER.update(dt);
-    }
-    enter(params){
 
+        if(gDOWN_KEYS['KeyQ']){
+            gSTATE_MACHINE.change(gStates.about)
+        }
+    }
+    enter(){
+        
     }
     exit(){
 
@@ -42,7 +46,7 @@ class TitleState extends baseState{
         this.shadowColor = 'green';
         this.shadowBlur = 4;
         this.fillStyle = 'red';
-        this._NAME = 'title'
+        this._NAME = 'title';
     }
     draw(ctx){
         //ctx.font = this.fontStyle;
@@ -96,6 +100,7 @@ class ServeState extends baseState{
         if(gDOWN_KEYS['Space']){
             gSTATE_MACHINE.change(gStates.play)
         }
+
         super.update(dt);
     }
 }
@@ -163,8 +168,115 @@ class PlayState extends baseState{
 
 }
 
+class AboutState extends baseState{
+    constructor(){
+        super();
+        this._NAME = 'about'
+    }
+    update(dt){
+
+        if(gDOWN_KEYS['Space']){
+            gSTATE_MACHINE.change(gSTATE_MACHINE.previous)
+        }
+        console.log('about update')
+    }
+    draw(ctx){
+       // super.draw(ctx);
+
+        let textbuffer = 0;
+        let alpha = ctx.globalAlpha;
+        ctx.globalAlpha = 0.6;
+        let baseY = 100;
+        let baseX = 220;
+        let h = (WINDOW_HEIGHT - baseY * 2) + 50 ;
+        let w = WINDOW_WIDTH - baseX * 2;
+        let lineH = baseY + 50;
+        let lineDiff = 25
+
+        ctx.lineWidth = 1;
+
+        ctx.fillStyle = 'blue';
+        roundRect(ctx, baseX, baseY, w, h, 20, true, true)
+
+        ctx.textAlign = 'center';
+        ctx.font = '28px arcade';
+        ctx.fillStyle = 'white';
+
+        ctx.fillText('WELCOME TO "AI" BICKBREAKER! ', WINDOW_WIDTH/2 , lineH);
+        lineH += lineDiff
+        ctx.font = '20px arcade';
+
+        ctx.fillText('A retro recreation by TANNER BROWN', WINDOW_WIDTH/2 , lineH);
+        lineH += lineDiff * 2
+
+        ctx.fillText('This game lets you watch an Artifical Intelligence play the game!', WINDOW_WIDTH/2 , lineH);
+        lineH += lineDiff
+
+        ctx.fillText('The "AI" makes calculated decisions to move LEFT, RIGHT or to WAIT based on', WINDOW_WIDTH/2 , lineH);
+        lineH += lineDiff
+
+        ctx.fillText('various calculations. You can see the results of several of these tests on the left', WINDOW_WIDTH/2 , lineH);
+        
+        var text = 'side of the screen under CPU CHECKS.'
+        lineH += lineDiff
+        ctx.fillText(text, WINDOW_WIDTH/2 , lineH);
+        
+        text = 'A TRUE check will display GREEN and a FALSE check will display RED. '
+        lineH += lineDiff *2
+        ctx.fillText(text, WINDOW_WIDTH/2 , lineH);
+
+        text = 'The STRESS indicator displays the CPUs current stress level.'
+        lineH += lineDiff * 2
+        ctx.fillText(text, WINDOW_WIDTH/2 , lineH);
+
+        text = 'This level increases or decreases as situations ocour that might cause them'
+        lineH += lineDiff
+        ctx.fillText(text, WINDOW_WIDTH/2 , lineH);
+
+       
+        text = 'Example: The breaker is moving down and on the other side of the field adds stress'
+        lineH += lineDiff *2
+        ctx.fillText(text, WINDOW_WIDTH/2 , lineH);
+
+
+        text = 'Or the ball being directly above the player and moving up would reduce stress'
+        lineH += lineDiff 
+        ctx.fillText(text, WINDOW_WIDTH/2 , lineH);
+
+        text = 'Higher stress levels will limit the number of calculations that can be made,'
+        lineH += lineDiff *2
+        ctx.fillText(text, WINDOW_WIDTH/2 , lineH);
+
+        text = 'which will in turn reduce the precision of the player. Calculations will also'
+        lineH += lineDiff
+        ctx.fillText(text, WINDOW_WIDTH/2 , lineH);
+
+        text = 'begin to return inaccurate results as stress levels rise, causing mistakes.'
+        lineH += lineDiff
+        ctx.fillText(text, WINDOW_WIDTH/2 , lineH);
+
+        text = 'press \'SPACE\' to return'
+        lineH += lineDiff *2
+        ctx.fillText(text, WINDOW_WIDTH/2 , lineH);
+
+        ctx.globalAlpha = alpha;
+    }
+    drawFrame(ctx){
+       // roundRect(ctx, WINDOW_WIDTH / 3, WINDOW_HEIGHT / 2, 10, 'red', true)
+    }
+    enter(params){
+        gDOWN_KEYS['KeyQ'] = false
+        gAGITATOR.isWatching = false
+    }
+    exit(){
+        gAGITATOR.isWatching = true
+    }
+    
+}
+
 var gStates = {
     title: new TitleState(),
     serve: new ServeState(),
     play: new PlayState(),
+    about: new AboutState(),
 };

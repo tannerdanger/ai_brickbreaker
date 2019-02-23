@@ -7,12 +7,14 @@ function StateMachine(){
     };
     this.current = this.empty;
     this.game = null;
+    this.previous = this.empty;
 }
 
-StateMachine.prototype.change = function (state, enterParams) {
+StateMachine.prototype.change = function (state, enterParams = {}) {
         this.current.exit();
+        this.previous = this.current;
         this.current = state;
-        this.current.enter(this.game);
+        this.current.enter(enterParams);
 };
 StateMachine.prototype.init = function(game) {
     this.game = game
@@ -25,5 +27,6 @@ StateMachine.prototype.update = function (dt) {
 StateMachine.prototype.draw = function (ctx) {
     this.current.draw(ctx);
 };
+
 
 gSTATE_MACHINE = new StateMachine();

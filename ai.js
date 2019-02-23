@@ -17,7 +17,7 @@ class AI {
             THINKING: 'THINKING'
         };
         this.decision = this.decisions.IDLE;
-
+        this.serveWait = 1;
         this.isWatching = true;
         this.skip = false;
         this.reset();
@@ -90,18 +90,19 @@ class AI {
         this.weights.LEFT = 0;
         this.weights.RIGHT = 0;
         this.weights.AIM = 0;
+        let err = this.getErrMargin()
         this.BREAKER_CHECKS = {
-            MOVING_UP : isBreakerMovingUp(),
-            BELOW_BL : this.isBreakerBelowBrickLine(),
+            MOVING_UP : isBreakerMovingUp(err),
+            BELOW_BL : this.isBreakerBelowBrickLine(err),
             //first functions make decision, below functions fine-tune position
-            ABOVEME : this.isBreakerAboveMe(),
-            RIGHTCENTER : this.isBreakerRightOfCenter(),
-            LEFTCENTER : this.isBreakerLeftOfCenter(),
-            ISCENTER : this.isBreakerCentered(),
-            IS_MOVING_UPRIGHT : isMovingUpRight(),
-            IS_MOVING_UPLEFT : isMovingUpLeft(),
-            IS_MOVING_DOWNRIGHT : isMovingDownRight(),
-            IS_MOVING_DOWNLEFT : isMovingDownLeft(),
+            ABOVEME : this.isBreakerAboveMe(err),
+            RIGHTCENTER : this.isBreakerRightOfCenter(err),
+            LEFTCENTER : this.isBreakerLeftOfCenter(err),
+            ISCENTER : this.isBreakerCentered(err),
+            IS_MOVING_UPRIGHT : isMovingUpRight(err),
+            IS_MOVING_UPLEFT : isMovingUpLeft(err),
+            IS_MOVING_DOWNRIGHT : isMovingDownRight(err),
+            IS_MOVING_DOWNLEFT : isMovingDownLeft(err),
         };
         if(resetTime){
             this.decision = this.decisions.IDLE;
@@ -120,8 +121,12 @@ class AI {
                 this.skip = true;
             }
             else if (state._NAME === 'serve') {
-                this.skip = false;
-                SPACE_BAR();
+                this.serveWait = this.serveWait - dt
+                if(this.serveWait <= 0){
+                    this.skip = false;
+                    SPACE_BAR();
+                    this.serveWait = 1;
+                }
                 //TODO: align shot
             }
             else if (state._NAME === 'play') {
@@ -164,19 +169,29 @@ class AI {
         if(maxChecks > 4)this.calcBreakerSpeed();
 
         if(maxChecks > 5)this.calculateRelativeDirection();
-        if(this.stressLevel % 50 === 0){
-            this.REACTION_TIMER.next();
-            this.stressLevel = 10 * this.REACTION_TIMER.current;
-        }
+        this.checkUpdateStress();
+
         if(maxChecks > 6){this.fineTune1()}
+        this.checkUpdateStress();
+
         if(maxChecks > 7){this.fineTune2()}
+        this.checkUpdateStress();
+
         if(maxChecks > 8){this.fineTune3()}
+        this.checkUpdateStress();
         //this.stressLevel = this.stressLevel /
         // for(var i = 0; i < (maxDecisions && this.CALCS.length); i++){
         //     //this.BREAKER_CHECKS.
         //     this.CALCS[i]();
         // }
 
+    }
+
+    checkUpdateStress(){
+        if(this.stressLevel % 50 === 0){
+            this.REACTION_TIMER.next();
+            this.stressLevel = 10 * this.REACTION_TIMER.current;
+        }
     }
 
 
@@ -419,44 +434,46 @@ class AI {
                 }
             }
         }
-
     }
 
 
-
-    isBreakerBelowBrickLine() {
-        return gBREAKER.y > (BRICK_LINE)
+    isBreakerBelowBrickLine(errMargin) {
+        errMargin = errMargin || 0
+        return gBREAKER.y + errMargin > (BRICK_LINE)
     }
 
-    isBreakerAboveMe() {
-        if (gBREAKER.x < gPLAYER.x - (gPLAYER.w/2)) { //breaker is to left of player's mid - 1/2 its with - 1/2 breaker w
+    isBreakerAboveMe(errMargin) {
+        errMargin = errMargin || 0
+        if (gBREAKER.x + errMargin < gPLAYER.x - (gPLAYER.w/2)) { //breaker is to left of player's mid - 1/2 its with - 1/2 breaker w
             return false
         }
-        if (gBREAKER.x > gPLAYER.x + (1.5* gPLAYER.w ) ) { //breaker is to left of player's mid - 1/2 its with - 1/2 breaker w
-            return false
-        }
-        return true
-    }
-
-    isBreakerCentered(){
-        if(gBREAKER.x < 5 - gPLAYER.x - + gPLAYER.w/2){
-            return false
-        }
-        if(gBREAKER.x > 5 + gPLAYER.x + gPLAYER.w/2 ){
+        if (gBREAKER.x + errMargin > gPLAYER.x + (1.5* gPLAYER.w ) ) { //breaker is to left of player's mid - 1/2 its with - 1/2 breaker w
             return false
         }
         return true
     }
 
-    isBreakerLeftOfCenter(){
-        return gBREAKER.x < gPLAYER.x + this.getErrMargin();
+    isBreakerCentered(errMargin){
+        errMargin = errMargin || 0
+        if(gBREAKER.x + errMargin < 5 - gPLAYER.x - + gPLAYER.w/2){
+            return false
+        }
+        if(gBREAKER.x + errMargin > 5 + gPLAYER.x + gPLAYER.w/2 ){
+            return false
+        }
+        return true
     }
-    isBreakerRightOfCenter(){
-        return gBREAKER.x > gPLAYER.x + this.getErrMargin();
+
+    isBreakerLeftOfCenter(errMargin){
+        errMargin = errMargin || 0
+        return gBREAKER.x < gPLAYER.x + errMargin
+    }
+    isBreakerRightOfCenter(errMargin = 0){
+        return gBREAKER.x > gPLAYER.x + errMargin
     }
 
     getErrMargin(){
-        return this.errMargin * this.errSize * randomOperator(); //random operator makes the result +/-
+        return Math.min(100, this.errMargin * this.stressLevel * randomOperator()) //random operator makes the result +/-
     }
 }
 function LEFT_ARROW() {
@@ -479,21 +496,21 @@ function randomOperator(){
     return (a === 0) ? -1 : (a===1) ? 1 : 0
 }
 
-function getBreakerSpeed(){
-    return (Math.abs(gBREAKER.dy) + Math.abs(gBREAKER.dx))
+function getBreakerSpeed(errMargin = 0){
+    return (Math.abs(gBREAKER.dy) + Math.abs(gBREAKER.dx) + errMargin)
 }
-function isPlayerLeftHalf(){
-    return gPLAYER.x < WINDOW_WIDTH / 2
+function isPlayerLeftHalf(errMargin = 0){
+    return gPLAYER.x + errMargin < WINDOW_WIDTH / 2
 }
-function isPlayerRightHalf(){
-    return gPLAYER.x > WINDOW_WIDTH / 2
+function isPlayerRightHalf(errMargin = 0){
+    return gPLAYER.x + errMargin> WINDOW_WIDTH / 2
 }
-function isBreakerMovingUp() {
-    return gBREAKER.dy < 0
+function isBreakerMovingUp(errMargin = 0) {
+    return gBREAKER.dy + errMargin/2 < 0
 }
-function getBreakerDistToPlayer(){
-    let x = (gPLAYER.x - gBREAKER.x) * (gPLAYER.x - gBREAKER.x);
-    let y = (gPLAYER.y - gBREAKER.y) * (gPLAYER.y - gBREAKER.y);
+function getBreakerDistToPlayer(errMargin = 0){
+    let x = (gPLAYER.x - gBREAKER.x) * (gPLAYER.x - gBREAKER.x)+ errMargin/2;
+    let y = (gPLAYER.y - gBREAKER.y) * (gPLAYER.y - gBREAKER.y) + errMargin/2;
     return Math.sqrt(x + y)
 }
 
@@ -528,17 +545,13 @@ function isMovingUpLeft(){
 //
 //     }
 // }
-
 //function playerLeftOf
-
-
 //var CPU_GUY = new AI();
 // //KEY PRESSES
 // AI.prototype.pressEnter = function () {
 //     this.game.ctx.dispatchEvent(new KeyboardEvent('keydown', {'key': 'Enter'}));
 //     this.game.ctx.dispatchEvent(new KeyboardEvent('keyup', {'key': 'Enter'}))
 // };
-
 // AI.prototype.pressUP = function () {
 //     this.game.ctx.dispatchEvent(new KeyboardEvent('keydown', {'key': 'ArrowUp'}));
 //     this.game.ctx.dispatchEvent(new KeyboardEvent('keyup', {'key': 'ArrowUp'}));
