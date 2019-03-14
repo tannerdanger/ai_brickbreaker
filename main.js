@@ -1,3 +1,34 @@
+
+// window.onload = function () {
+//     gSOCKET = io.connect('http://24.16.255.56:8888');
+//     gSOCKET.on('load', function (ai) {
+//         console.log('loaded ai');
+//         gAGITATOR.CPU_GUY.weights = ai.data.weights;
+//         gAGITATOR.CPU_GUY.stressLevel = ai.data.stressLevel;
+//         gAGITATOR.CPU_GUY.errSize = ai.data.errSize;
+//         gAGITATOR.CPU_GUY.errMargin = ai.data.errMargin;
+//         gAGITATOR.decisions = ai.data.decisions;
+//         gAGITATOR.decision = ai.data.decision;
+//         gAGITATOR.serveWait = ai.data.serveWait;
+//         gAGITATOR.isWatching = ai.data.isWatching;
+//         gSCORE = ai.data.score || gSCORE;
+//         gSTATE_MACHINE.change(gStates.serve);
+//     })
+//     // gSOCKET.on('loadstate', function(data){
+//     //     console.log('data: ', data);
+//     //     gLASTSTATE = data()
+//     // });
+//     //
+//     // gSOCKET.on('loadscores', function (data) {
+//     //     console.log('scores: ',data);
+//     //     gHIGHSCORES = data;
+//     // });
+//     //
+//     // gSOCKET.emit('loadstate', { studentname: "Tanner Brown", statename: "last_state" });
+//     // gSOCKET.emit('loadscores', { studentname: "Tanner Brown", statename: "last_state" });
+//
+// };
+
 //TODO: check the downkeys and find out what is wrong with the behavior.
 // AI keys are sticking/not resetting properly
 function InputManager() {
@@ -25,9 +56,7 @@ function agitator(cpu){
     this.h = this.y + 60;
     this.play = false;
 }
-agitator.prototype.update = function(dt){
 
-};
 agitator.prototype.draw = function (ctx) {
     if(this.play) {
         let textbuffer = 0;
@@ -95,21 +124,9 @@ agitator.prototype.draw = function (ctx) {
 
         // ctx.fillText('CONTROLS', this.x + this.w/2, controlBlockBase, this.w - 5);
         ctx.font = '18px arcade';
+        ctx.fillText('press \'L\' to Load Stress', this.x + this.w/2, controlBlockBase + 35, this.w);
         ctx.fillText('press \'Q\' for ABOUT', this.x + this.w/2, controlBlockBase + 55, this.w);
-        // wordW = ctx.measureText('CONTROLS').width + 10;
-        // ctx.strokeStyle = 'red';
 
-        // ctx.beginPath();
-        // ctx.moveTo(this.x + this.w/2 - wordW /2 , controlBlockBase + 5);
-        // ctx.lineTo(this.x + this.w/2 + wordW /2, controlBlockBase + 5);
-        // ctx.stroke();
-
-        // ctx.font = '14px arcade';
-        // ctx.textAlign = 'start';
-
-        // ctx.fillText('CPU STRESS + :  UP KEY'+String.fromCharCode(), this.x + 10, controlBlockBase + 25, this.w);
-        // ctx.fillText('CPU STRESS -- :  DOWN KEY', this.x + 10, controlBlockBase + 40, this.w);
-        // ctx.fillText('READ ABOUT THIS GAME : Q ', this.x + 10, controlBlockBase + 55, this.w);
 
         ctx.globalAlpha = alpha
     }
@@ -133,9 +150,13 @@ Game.prototype.draw = function(){
     this.ctx.save();
     gSTATE_MACHINE.draw(this.ctx);
     gAGITATOR.draw(this.ctx);
+    this.ctx.textAlign = 'start'
+    this.ctx.font = '24px arcade';
+    this.ctx.fillText('LIVES: ' + gLIVES, 20, 25)
     this.ctx.restore();
 };
 Game.prototype.update = function(dt){
+
     this.CPU_GUY.cleanup(); //cleanup last turn BEFORE new turn
     this.CPU_GUY.calculateDecision(gSTATE_MACHINE.current, dt);
     gSTATE_MACHINE.update(dt);
@@ -183,11 +204,11 @@ function buildBricks(rows, cols, canvasW, canvasH){
     var nextX = 20;
     var nextY = 40;
     var margins = 20;
-    console.log('margins: ', margins);
+   // console.log('margins: ', margins);
     var brickwidth = (canvasW - (margins * 2)); //canvas - margins = working space
-    console.log('build area minus the ends: ', brickwidth);
+   // console.log('build area minus the ends: ', brickwidth);
     brickwidth = brickwidth - ((cols-1) *margins); // workingspace - (cols * margins)
-    console.log('build area minus brick spacing: ', brickwidth);
+   // console.log('build area minus brick spacing: ', brickwidth);
     brickwidth = brickwidth / cols;
     brickctr = 0;
     console.log('final brickwidth :',brickwidth);

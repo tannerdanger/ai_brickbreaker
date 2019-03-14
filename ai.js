@@ -1,4 +1,4 @@
-MAX_STRESS = 50;
+
 
 class AI {
     constructor() {
@@ -17,18 +17,18 @@ class AI {
             THINKING: 'THINKING'
         };
         this.decision = this.decisions.IDLE;
-        this.serveWait = 1;
+        this.serveWait = 4;
         this.isWatching = true;
         this.skip = false;
         this.reset();
 
         this.REACTION_TIMER = {
-            FASTEST : 0.6,
-            FAST : 0.9,
-            AVERAGE : 1.1,
-            SLOW : 1.3,
-            PANICKED : 1.6,
-            current : 0.6,
+            FASTEST : 1.6,
+            FAST : 1.9,
+            AVERAGE : 2.1,
+            SLOW : 2.3,
+            PANICKED : 2.6,
+            current : 1.6,
             tick : 0,
             checks : 8,
             currentText : function(){
@@ -67,7 +67,7 @@ class AI {
             },
             getMaxChecks(){
                 if((this.current * 10) % this.checks !== (this.current*10)){
-                    this.checks = this.checks-1;
+                    this.checks = Math.max(this.checks-1, 0);
                     return this.checks;
                 }else{
                     this.checks = this.checks;
@@ -107,29 +107,48 @@ class AI {
         if(resetTime){
             this.decision = this.decisions.IDLE;
             this.REACTION_TIMER.reset();
+
         }
+        if(this.BREAKER_CHECKS.IS_MOVING_UPRIGHT){
+            console.log('moving upright')
+        }
+        if(this.BREAKER_CHECKS.IS_MOVING_UPLEFT){
+            console.log('moving upleft')
+        }
+        if(this.BREAKER_CHECKS.IS_MOVING_DOWNLEFT){
+            console.log('moving downleft')
+        }
+        if(this.BREAKER_CHECKS.IS_MOVING_DOWNRIGHT){
+            console.log('moving downright')
+        }
+
 
 
     }
     calculateDecision(state, dt) {
+
         this.REACTION_TIMER.tick += dt;
+        this.serveWait = this.serveWait - dt;
+
         if (this.isWatching && this.REACTION_TIMER.canReact()) {
             this.reset(true);
             this.decision = this.decisions.THINKING;
 
-            if (state._NAME === 'title') {
+            if (state._NAME === 'title' || state._NAME === 'about' || state._NAME === 'load') {
                 this.skip = true;
             }
+
             else if (state._NAME === 'serve') {
-                this.serveWait = this.serveWait - dt
+               // console.log(this.serveWait);
                 if(this.serveWait <= 0){
                     this.skip = false;
                     SPACE_BAR();
-                    this.serveWait = 1;
+                    this.serveWait = 4;
                 }
                 //TODO: align shot
             }
             else if (state._NAME === 'play') {
+                this.serveWait = 4;
                 // console.log('margin w/ operator', (randomOperator()*this.errMargin));
                 this.calculatePlay();
             }
@@ -179,11 +198,7 @@ class AI {
 
         if(maxChecks > 8){this.fineTune3()}
         this.checkUpdateStress();
-        //this.stressLevel = this.stressLevel /
-        // for(var i = 0; i < (maxDecisions && this.CALCS.length); i++){
-        //     //this.BREAKER_CHECKS.
-        //     this.CALCS[i]();
-        // }
+
 
     }
 
@@ -331,15 +346,21 @@ class AI {
         }
         if(this.BREAKER_CHECKS.RIGHTCENTER){ //right of me
 
-            this.increaseMove(1, 6 + stressbonus)
+            this.increaseMove(1, 10 + stressbonus)
 
         }else if(this.BREAKER_CHECKS.LEFTCENTER){ //left of me
 
-            this.increaseMove(6 + stressbonus, 1)
+            this.increaseMove(10 + stressbonus, 1)
 
-        }else if(this.BREAKER_CHECKS.ABOVEME){
+        }
+        if(this.BREAKER_CHECKS.ABOVEME){
             this.increaseMove(2 + stressbonus, 2 + stressbonus);
-            this.increaseAim(1);
+            if(gBREAKER.dx < 0){
+                this.increaseMove(15 + stressbonus, 1 + stressbonus)
+            }
+            if(gBREAKER.dx > 0){
+                this.increaseMove(1 + stressbonus, 15 + stressbonus)
+            }
         }
 
     }
@@ -360,9 +381,18 @@ class AI {
 
             this.increaseMove(12 + stressbonus, 1)
 
-        }else if(this.BREAKER_CHECKS.ABOVEME){
-            this.increaseMove(1 + stressbonus, 1 + stressbonus);
-            this.increaseAim(1);
+        }
+        if(this.BREAKER_CHECKS.ABOVEME){
+
+            if(this.BREAKER_CHECKS.ABOVEME){
+                this.increaseMove(2 + stressbonus, 2 + stressbonus);
+                if(gBREAKER.dx < 0){
+                    this.increaseMove(15 + stressbonus, 1 + stressbonus)
+                }
+                if(gBREAKER.dx > 0){
+                    this.increaseMove(1 + stressbonus, 15 + stressbonus)
+                }
+            }
         }
 
     }
@@ -382,15 +412,16 @@ class AI {
         }else{  //moving down
             if(this.BREAKER_CHECKS.BELOW_BL){
                 this.increaseStress(2);
-                this.increaseMove(2);
+                this.increaseMove(2,2);
             }else{//above bl
                 this.increaseStress();
-                this.increaseMove();
+                this.increaseMove(1,1);
             }
-            if(gBREAKER.dx < 0){ //breaker moving left
-                this.increaseMove(3,1)
-            }else{              //breaker moving right
-                this.increaseMove(1,3)
+            if(gBREAKER.dx < 0){
+                this.increaseMove(5 , 1 )
+            }
+            if(gBREAKER.dx > 0){
+                this.increaseMove(1 , 5 )
             }
         }
     }
@@ -518,70 +549,22 @@ function getBreakerDirection(angle){
     return gBREAKER.VECTOR().direction();
 }
 function isMovingDownLeft(){
-    let angle = new Vector(gBREAKER.x, gBREAKER.y).direction();
-    return angle > -3 && angle < -1.5
+    let angle = new Vector(gBREAKER.dx, gBREAKER.dy).direction();
+    return 1.6 < angle
 }
 function isMovingDownRight(){
-    let angle = new Vector(gBREAKER.x, gBREAKER.y).direction();
-    return angle > -1.5 && angle < 0
+    let angle = new Vector(gBREAKER.dx, gBREAKER.dy).direction();
+    return 0 < angle && angle < 1.5
 }
 function isMovingUpRight(){
-    let angle = new Vector(gBREAKER.x, gBREAKER.y).direction();
-    return angle > 0 && angle < 1.5
+    let angle = new Vector(gBREAKER.dx, gBREAKER.dy).direction();
+    return angle < 0 && angle > -1.5
+    //return -1 < angle && angle < -1.5
 }
 
 function isMovingUpLeft(){
-    let angle = new Vector(gBREAKER.x, gBREAKER.y).direction();
-    return angle > 1.5 && angle < 3
+    let angle = new Vector(gBREAKER.dx, gBREAKER.dy).direction();
+    //console.log('angle: ',angle)
+    return angle < -1.5
 }
 
-
-
-
-// function getBrkSpdToPlayer(){
-//     if(gBREAKER.dx < 0) { //moving left
-//
-//     } else {    //moving right
-//
-//     }
-// }
-//function playerLeftOf
-//var CPU_GUY = new AI();
-// //KEY PRESSES
-// AI.prototype.pressEnter = function () {
-//     this.game.ctx.dispatchEvent(new KeyboardEvent('keydown', {'key': 'Enter'}));
-//     this.game.ctx.dispatchEvent(new KeyboardEvent('keyup', {'key': 'Enter'}))
-// };
-// AI.prototype.pressUP = function () {
-//     this.game.ctx.dispatchEvent(new KeyboardEvent('keydown', {'key': 'ArrowUp'}));
-//     this.game.ctx.dispatchEvent(new KeyboardEvent('keyup', {'key': 'ArrowUp'}));
-// };
-// AI.prototype.pressDOWN = function () {
-//     this.game.ctx.dispatchEvent(new KeyboardEvent('keydown', {'key': 'ArrowDown'}));
-//     this.game.ctx.dispatchEvent(new KeyboardEvent('keyup', {'key': 'ArrowDown'}));
-// };
-// AI.prototype.pressLEFT = function () {
-//     this.game.ctx.dispatchEvent(new KeyboardEvent('keydown', {'key': 'ArrowLeft'}));
-//     this.game.ctx.dispatchEvent(new KeyboardEvent('keyup', {'key': 'ArrowLeft'}));
-// };
-// AI.prototype.pressRIGHT = function () {
-//     this.game.ctx.dispatchEvent(new KeyboardEvent('keydown', {'key': 'ArrowRight'}));
-//     this.game.ctx.dispatchEvent(new KeyboardEvent('keyup', {'key': 'ArrowRight'}));
-// };
-// //KEY HOLDS
-// AI.prototype.holdEnter = function () {
-//     this.game.ctx.dispatchEvent(new KeyboardEvent('keydown', {'key': 'Enter'}));
-// };
-// pressKey(key) {
-//     this.ctx.dispatchEvent(new KeyboardEvent('keydown', { 'key': key }));
-//     this.cleanup = function () {
-//         this.ctx.dispatchEvent(new KeyboardEvent('keyup', { 'key': key }));
-//     }
-// }
-// holdKey(key) {
-//     this.ctx.dispatchEvent(new KeyboardEvent('keydown', { 'key': key }));
-// }
-// releaseKey(key) {
-//     this.ctx.dispatchEvent(new KeyboardEvent('keyup', { 'key': key }))
-// }
-// //TODO: the rest

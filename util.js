@@ -1,3 +1,44 @@
+////// ======= CONSTANT VARIABLES =======//////
+
+/** Window sizes on the page. */
+WINDOW_WIDTH = 1280;
+WINDOW_HEIGHT = 720;
+MAX_STRESS = 50;
+/** Virtual sizes to simulate resolution. */
+VIRTUAL_WIDTH = 432;
+VIRTUAL_HEIGHT = 243;
+PLAYER_SPEED = 300;
+BRICK_LINE = 280;
+gSCORE = 0;
+
+/** Global objects */
+var gLASTSTATE = null;
+var gSOCKET = null;
+/** The object the player controls. Represented as the paddle that hits the breaker. */
+gPLAYER = {};
+/** The ball the player reflects to break bricks. */
+gBREAKER = {};
+/** An array of brick objects */
+gBRICKS = [{}];
+gSTATE_MACHINE = {};
+gDOWN_KEYS = {};
+gAGITATOR = {};
+gBRICKFILLS = {
+    0 : 'blue',
+    1 : 'yellow',
+    2 : 'red',
+};
+gLIVES = 3;
+gMAX_LIVES = 3;
+gSounds = {
+    aud_HIT_WALL : 'assets/wall_hit.wav',
+    aud_HIT_PADDLE : 'assets/paddle_hit.wav',
+    aud_SCORE : 'assets/score.wav',
+    aud_HIT_BRICK : 'assets/wall_hit.wav',
+    aud_EXPLOSION : 'assets/explosion.wav',
+    aud_UPGRADE : 'assets/powerup.wav',
+    aud_MUSIC : 'assets/music.mp3',
+};
 
 /**
  * Draws a rounded rectangle using the current state of the canvas.
@@ -36,4 +77,14 @@ function roundRect(ctx, x, y, width, height, radius, fill, stroke){
     if (fill) {
         ctx.fill();
     }
+}
+
+function makeData() {
+    var name = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+    for (var i = 0; i < 3; i++)
+        name += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    return name ;
 }
