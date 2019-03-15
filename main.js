@@ -1,36 +1,4 @@
 
-// window.onload = function () {
-//     gSOCKET = io.connect('http://24.16.255.56:8888');
-//     gSOCKET.on('load', function (ai) {
-//         console.log('loaded ai');
-//         gAGITATOR.CPU_GUY.weights = ai.data.weights;
-//         gAGITATOR.CPU_GUY.stressLevel = ai.data.stressLevel;
-//         gAGITATOR.CPU_GUY.errSize = ai.data.errSize;
-//         gAGITATOR.CPU_GUY.errMargin = ai.data.errMargin;
-//         gAGITATOR.decisions = ai.data.decisions;
-//         gAGITATOR.decision = ai.data.decision;
-//         gAGITATOR.serveWait = ai.data.serveWait;
-//         gAGITATOR.isWatching = ai.data.isWatching;
-//         gSCORE = ai.data.score || gSCORE;
-//         gSTATE_MACHINE.change(gStates.serve);
-//     })
-//     // gSOCKET.on('loadstate', function(data){
-//     //     console.log('data: ', data);
-//     //     gLASTSTATE = data()
-//     // });
-//     //
-//     // gSOCKET.on('loadscores', function (data) {
-//     //     console.log('scores: ',data);
-//     //     gHIGHSCORES = data;
-//     // });
-//     //
-//     // gSOCKET.emit('loadstate', { studentname: "Tanner Brown", statename: "last_state" });
-//     // gSOCKET.emit('loadscores', { studentname: "Tanner Brown", statename: "last_state" });
-//
-// };
-
-//TODO: check the downkeys and find out what is wrong with the behavior.
-// AI keys are sticking/not resetting properly
 function InputManager() {
     this.ctx = null;
     this.isAbout = false;

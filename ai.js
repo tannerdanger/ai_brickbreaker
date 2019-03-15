@@ -23,12 +23,12 @@ class AI {
         this.reset();
 
         this.REACTION_TIMER = {
-            FASTEST : 1.6,
-            FAST : 1.9,
-            AVERAGE : 2.1,
-            SLOW : 2.3,
-            PANICKED : 2.6,
-            current : 1.6,
+            FASTEST : 0.75, //15 update cycles per decision
+            FAST : 1, //20 update per decision
+            AVERAGE : 1.25, //25 updates
+            SLOW : 1.5, //30
+            PANICKED : 2, //35
+            current : 0.75,
             tick : 0,
             checks : 8,
             currentText : function(){
@@ -196,7 +196,7 @@ class AI {
         if(maxChecks > 7){this.fineTune2()}
         this.checkUpdateStress();
 
-        if(maxChecks > 8){this.fineTune3()}
+        if(maxChecks >= 8){this.fineTune3()}
         this.checkUpdateStress();
 
 
