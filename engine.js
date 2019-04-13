@@ -1,3 +1,6 @@
+/**
+    Request animation frame from window
+*/
 window.requestAnimFrame = (function () {
     return window.requestAnimationFrame ||
         window.webkitRequestAnimationFrame ||
@@ -9,7 +12,9 @@ window.requestAnimFrame = (function () {
         };
 })();
 
-
+/**
+    Creates a new game engine object with null values
+*/
 function GameEngine(){
     this.timer = null;
     this.game = null;
@@ -19,12 +24,19 @@ function GameEngine(){
     this.surfaceHeight = null;
 
 }
+/**
+    Inits default Game Engine values, accepts Canvas CTX as parameter
+*/
 GameEngine.prototype.init = function(ctx ,game){
     this.game = game;
     this.ctx = ctx;
     this.timer = new Timer();
 
 };
+
+/**
+    Starts the game engine
+*/
 GameEngine.prototype.start = function(){
     var that = this;
     (function gameLoop(){
@@ -32,21 +44,27 @@ GameEngine.prototype.start = function(){
         requestAnimFrame(gameLoop, that.ctx.canvas);
     })();
 };
+
+/**
+    Game engine loop
+*/
 GameEngine.prototype.loop = function(){
     this.dt = this.timer.tick();
     this.game.update(this.dt);
-    this.game.draw();
-    
+    this.game.draw();    
 };
 
-
-
-
+/**
+    A game timer object.
+*/
 function Timer(){
     this.gameTime = 0;
     this.maxStep = 0.05;
     this.wallLastTimestamp = 0;
 }
+/**
+    Increment timer, update track ticks/time elapsed, return delta time
+*/
 Timer.prototype.tick = function(){
     var wallCurrent = Date.now();
     var wallDelta = (wallCurrent - this.wallLastTimestamp) / 1000;

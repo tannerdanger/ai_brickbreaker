@@ -1,14 +1,22 @@
-
+/*
+*   A class that handles all the Artificial Intelligence behavior.
+*
+*/
 
 class AI {
+    /**
+        Constructs new AI for new game
+    */
     constructor() {
         console.log('hi from AI!');
 
+        //should the AI move left, move right, or wait and aim a new shot
         this.weights = {
             LEFT: 0,
             RIGHT: 0,
             AIM : 0,
         };
+        // the possible deicions the AI can make each turn
         this.decisions = {
             IDLE : 'IDLE',
             AIMING : 'AIMING',
@@ -16,12 +24,19 @@ class AI {
             RIGHT : 'MOVING RIGHT',
             THINKING: 'THINKING'
         };
+        //Current decisions of the AI
         this.decision = this.decisions.IDLE;
+        //Wait 4 seconds before serving ball on new game
         this.serveWait = 4;
+        //boolean to toggle if the AI is watching the ball or stays idle
         this.isWatching = true;
+        //boolean for skipping the turn
         this.skip = false;
+        //resets default values
         this.reset();
 
+        //object that holds data for different reaction speeds and
+        //keeps track of how much time the AI has to react that cycle.
         this.REACTION_TIMER = {
             FASTEST : 0.75, //15 update cycles per decision
             FAST : 1, //20 update per decision
@@ -76,16 +91,21 @@ class AI {
             }
         };
 
+        //the margin for error. How likely the AI is to make a mistake
         this.errMargin = 3;
+        //how big of an error the AI makes
         this.errSize = 1;
+        //the current level of the AIs stress
         this.stressLevel = 1;
 
-
+        //initialize object to track results of the AI's calculations
         this.BREAKER_CHECKS = {};
 
+        //the total number of AI calculations
         this.TOTAL_OPTIONS = 6;
     }
     // watch(){this.isWatching = true; }
+    //resets to default values
     reset(resetTime = false) {
         this.weights.LEFT = 0;
         this.weights.RIGHT = 0;
@@ -125,6 +145,10 @@ class AI {
 
 
     }
+    /**
+        Function for calculating the AIs decision based on the current game state
+        and the change in time since last check.
+    */
     calculateDecision(state, dt) {
 
         this.REACTION_TIMER.tick += dt;
@@ -172,15 +196,16 @@ class AI {
                 }
             }
         } else {
-            
+            //TODO:
         }
     }
-
+    //cleanup before next turn
     cleanup() {
         this.reset();
         this.skip = false;
     }
 
+    //calculates the AIs decision if the current state is the Play state
     calculatePlay() {
         var maxChecks = this.REACTION_TIMER.getMaxChecks();
 
@@ -202,13 +227,13 @@ class AI {
 
     }
 
+    //Checks if stress needs to be increased
     checkUpdateStress(){
         if(this.stressLevel % 50 === 0){
             this.REACTION_TIMER.next();
             this.stressLevel = 10 * this.REACTION_TIMER.current;
         }
     }
-
 
     increaseMoveCalcDir(less = 1, more = 2){
         if(this.BREAKER_CHECKS.ISCENTER){
@@ -311,6 +336,7 @@ class AI {
         }
     }
 
+    //if AI has decisions left, fine tune them to be more precise.
     fineTune1(){
         this.decreaseStress();
         let dist = getBreakerDistToPlayer();
@@ -335,6 +361,7 @@ class AI {
 
     }
 
+    //further fine tune results if time allows
     fineTune2(){
         this.decreaseStress();
         let dist = getBreakerDistToPlayer();
@@ -364,6 +391,8 @@ class AI {
         }
 
     }
+
+    //further fine tune results if time allows
     fineTune3(){
         this.decreaseStress();
         let dist = getBreakerDistToPlayer();
@@ -484,6 +513,7 @@ class AI {
         return true
     }
 
+    //is the breaker centered over the paddle?
     isBreakerCentered(errMargin){
         errMargin = errMargin || 0
         if(gBREAKER.x + errMargin < 5 - gPLAYER.x - + gPLAYER.w/2){
@@ -507,14 +537,24 @@ class AI {
         return Math.min(100, this.errMargin * this.stressLevel * randomOperator()) //random operator makes the result +/-
     }
 }
+
+/**
+    Function that simulates the AI pressing the Left Arrow key to move the paddle Left
+*/
 function LEFT_ARROW() {
     gDOWN_KEYS['ArrowLeft'] = true;
     gDOWN_KEYS['ArrowRight'] = false;
 }
+/**
+    Function that simulates the AI pressing the Right Arrow key to move the paddle Right
+*/
 function RIGHT_ARROW() {
     gDOWN_KEYS['ArrowRight'] = true;
     gDOWN_KEYS['ArrowLeft'] = false;
 }
+/**
+    Function that simulates the AI pressing the Space Button key to shoot the breaker
+*/
 function SPACE_BAR(){
     gDOWN_KEYS['Space']= true;
 }
@@ -522,11 +562,14 @@ function SPACE_BAR(){
 function randomInt(max){
     return Math.floor(Math.random() * Math.floor(max))
 }
+/**
+    Randomly returns a -1 or a 1 so error amounts can be added or subtracted on random chance.
+*/
 function randomOperator(){
     var a = randomInt(2);
     return (a === 0) ? -1 : (a===1) ? 1 : 0
 }
-
+///// tests below ///////
 function getBreakerSpeed(errMargin = 0){
     return (Math.abs(gBREAKER.dy) + Math.abs(gBREAKER.dx) + errMargin)
 }

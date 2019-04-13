@@ -1,6 +1,9 @@
 
 
-
+/**
+    Base entity of the game.
+    Sets default values and functions used by most or all other entities.
+*/
 class entity{
     constructor(x, y, w, h){
         this.x = this._x = x;
@@ -13,10 +16,12 @@ class entity{
         this.VECTOR = this.getVector;
 
     }
+    //Base draw function draws defined color or white.
     draw(ctx){
         ctx.fillStyle = this.fillStyle || 'white';
         ctx.fillRect(this.x, this.y, this.w, this.h)
     }
+    //base update function
     update(dt){
         //this.x = (this.dx < 0) ? Math.max(0, this.x + (this.dx * dt))//if dx is less than zero, move left
         //  : Math.min(WINDOW_WIDTH - this.w, this.x + (this.dx * dt));
@@ -43,14 +48,17 @@ class entity{
             gBREAKER.dy = -gBREAKER.dy;
         }
     }
+    //gets a vector from the entity's location
     getVector(){
         return new Vector(this.x, this.y)
     }
+    //gets a direction from the entity's vector
     getDirection(){
         let v = this.getVector();
         let dir = v.direction();
         return dir
     }
+    //resets the entity to its original location
     reset(){
         this.x = this._x;
         this.y = this._y;
@@ -61,7 +69,11 @@ class entity{
     }
 }
 
-//ENTITIES
+////ENTITIES/////
+
+/**
+    Paddle that the player moves left and right to deflect the breaker.
+*/
 class Paddle extends entity{
     constructor(x, y, w, h){
         super(x, y, w, h);
@@ -78,11 +90,14 @@ class Paddle extends entity{
         roundRect(ctx, this.x, this.y, this.w, this.h, this.r, true, true)
     }
 }
-
+/**
+    Breaker that breaks the bricks. Or, the 'ball' the player deflects.
+*/
 class Breaker extends entity {
     constructor(x,y,w){
         super(x,y,w, w);
     }
+    //overwrite, no call to parent
     draw(ctx){
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.w, 0, 2 * Math.PI, false);
@@ -92,6 +107,7 @@ class Breaker extends entity {
         ctx.stroke();
     }
 
+    //does this collide with something else?
     collides(entity){
         if( this.x > entity.x + entity.w || entity.x > this.x + this.w){
             return false;
@@ -101,6 +117,7 @@ class Breaker extends entity {
         }
         return true;
     }
+    //serve the breaker
     serve(){
         if(this.dx === 0){
             this.dx = 120
@@ -108,7 +125,8 @@ class Breaker extends entity {
         this.dy = -PLAYER_SPEED;
         this.w = this._w;
     }
-    isMovingBottomRight(){
+
+    isMovingTopLeft(){
         return
     }
     isMovingBottomLeft(){
@@ -124,7 +142,10 @@ class Breaker extends entity {
 
 }
 
-
+/**
+    Brick entity the breaker attempts to 'break' by colliding with it.
+    Spawns in one of several colors, each color requiring a different number of hits to break.
+*/
 class Brick extends entity{
     constructor(x, y, w, h, level){
         super(x, y, w, h);
@@ -133,6 +154,7 @@ class Brick extends entity{
         this.fillStyle = gBRICKFILLS[this.level];
         this.remove = false;
     }
+    //Logic applied when brick his hit.
     hit(){
         this.level--;
         if(this.level <= 0){
@@ -143,6 +165,7 @@ class Brick extends entity{
             this.fillStyle = gBRICKFILLS[this.level]
         }
     }
+    //override parent
     draw(ctx){
         ctx.fillStyle = gBRICKFILLS[this.level];
         roundRect(ctx, this.x, this.y, this.w, this.h, this.r, true, true)

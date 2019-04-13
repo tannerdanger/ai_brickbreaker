@@ -1,8 +1,13 @@
-
+/*
+ An input manager to accept input from player and AI
+*/
 function InputManager() {
     this.ctx = null;
     this.isAbout = false;
 };
+/**
+    Registers listeners to listen for key presses
+ */
 InputManager.prototype.registerEventListeners = function (ctx) {
     this.ctx = ctx;
     this.ctx.canvas.addEventListener('keydown', e => {
@@ -15,7 +20,9 @@ InputManager.prototype.registerEventListeners = function (ctx) {
         gDOWN_KEYS[e.code] = false
     }, false)
 };
-
+/**
+    Agitates the AI by increasing stress levels
+ */
 function agitator(cpu){
     this.CPU_GUY = cpu;
     this.w = 200;
@@ -24,7 +31,7 @@ function agitator(cpu){
     this.h = this.y + 60;
     this.play = false;
 }
-
+// draws AI data to the screen
 agitator.prototype.draw = function (ctx) {
     if(this.play) {
         let textbuffer = 0;
@@ -99,20 +106,19 @@ agitator.prototype.draw = function (ctx) {
         ctx.globalAlpha = alpha
     }
 };
+//increases stress of the AI
 agitator.prototype.increaseStress = function(num){
     this.CPU_GUY.increaseStress(num)
 };
-
+//Creates a new game object
 function Game(sounds){
-
-
     this.engine = new GameEngine();
     this.inputManager = new InputManager();
     this.entities = [];
     this.ctx = null;
     this.CPU_GUY = null;
-
 }
+//Game draw function
 Game.prototype.draw = function(){
     this.ctx.clearRect(0, 0, this.surfaceWidth, this.surfaceHeight);
     this.ctx.save();
@@ -123,12 +129,14 @@ Game.prototype.draw = function(){
     this.ctx.fillText('LIVES: ' + gLIVES, 20, 25)
     this.ctx.restore();
 };
+//Updates the game based on time elapsed
 Game.prototype.update = function(dt){
 
     this.CPU_GUY.cleanup(); //cleanup last turn BEFORE new turn
     this.CPU_GUY.calculateDecision(gSTATE_MACHINE.current, dt);
     gSTATE_MACHINE.update(dt);
 };
+//Inits a new game
 Game.prototype.init = function(){
     //init
     window.document.title = "BRICK BREAKER!";
@@ -165,6 +173,9 @@ var GAME = new Game();
 AM.downloadBulk(Object.values(gSounds), function(){
     GAME.init();
 });
+/**
+    Initializes the bricks in a specific pattern and spaces them evenly.
+ */
 function buildBricks(rows, cols, canvasW, canvasH){
 
     console.log(canvasW);

@@ -1,3 +1,8 @@
+/**
+    An asset manager class to manage the assets loaded into the game. 
+    Mostly only used for audio purposes for this game but small changes make it work great for images etc.
+*/
+
 function AssetManager() {
     this.successCount = 0;
     this.errorCount = 0;
