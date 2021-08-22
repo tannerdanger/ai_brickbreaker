@@ -7,3 +7,5 @@ This simple game includes an 'AI' that reads the game's state and controls the p
 As the game continues, the AI's 'stress level' which is factored into it's calculations. The higher the AI's 'stress level', the greater it's margin for error and therefore, the greater possiblity of mistakes being made.
 
 Note: This 'AI' is not the result of any deep or machine learning, although I do plan on using it for such at a later date.
+
+![alt text](https://imgur.com/a/MJNK8I4)
