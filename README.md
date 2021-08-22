@@ -8,4 +8,4 @@ As the game continues, the AI's 'stress level' which is factored into it's calcu
 
 Note: This 'AI' is not the result of any deep or machine learning, although I do plan on using it for such at a later date.
 
-![alt text](https://imgur.com/a/MJNK8I4)
+![alt text](https://i.imgur.com/A82geKm.png)
