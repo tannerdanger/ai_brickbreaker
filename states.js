@@ -1,4 +1,4 @@
-gSOCKET = io.connect('http://24.16.255.56:8888');
+//gSOCKET = io.connect('http://24.16.255.56:8888');
 var style = {
     fontFamily: 'arcade',
     fontSize: 28,
@@ -338,7 +338,7 @@ class LoadState extends baseState {
         this.isDataLoaded = false;
         this.data = null;
         this.ctr = 0;
-        gSOCKET.on('load', this.loadData)
+//        gSOCKET.on('load', this.loadData)
     }
     draw(ctx){
         if(this.isPrompting){
@@ -373,7 +373,7 @@ class LoadState extends baseState {
 
     }
     enter(params){
-        gSOCKET.emit('load', { studentname: "Tanner Brown", statename: "last_ai" });
+      //  gSOCKET.emit('load', { studentname: "Tanner Brown", statename: "last_ai" });
     }
 
     update(dt){
